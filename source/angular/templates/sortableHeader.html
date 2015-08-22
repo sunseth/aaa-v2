@@ -1,0 +1,14 @@
+<thead>
+	<style>
+	.sort.icon {
+		float: right;
+	}
+</style>
+    <tr>
+        <th ng-repeat="header in headers" ng-click="preprocess($index)">
+        	{{header}}
+        	<i ng-class="(selected != $index) ? '' : (ascending[$index]? 'sort icon ascending' : 'sort icon descending')"></i></th>
+        </th>
+        <th class="two wide"></th>        
+    </tr>
+</thead>

@@ -20,6 +20,8 @@ envify = require 'envify'
 uglify = require 'gulp-uglify'
 filter = require 'gulp-filter'
 rename = require 'gulp-rename'
+coffeelint = require 'gulp-coffeelint'
+stylish = require 'coffeelint-stylish'
 
 input =
   favicon: "#{__dirname}/source/favicon.ico"
@@ -120,6 +122,12 @@ gulp.task 'nodemon', ['build'], ->
       "bower_components/**/*",
       "node_modules/**/*"
     ]
+
+gulp.task 'lint', ->
+  gulp.src('./**/*.coffee')
+    .pipe filter(['**/*.coffee', '!node_modules/**/*'])
+    .pipe coffeelint()
+    .pipe coffeelint.reporter(stylish)
 
 gulp.task 'serve', ['nodemon', 'watch']
 gulp.task 'build', ['css', 'favicon', 'images', 'bower', 'coffee', 'bless', 'templates']

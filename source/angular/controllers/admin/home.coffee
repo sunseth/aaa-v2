@@ -1,4 +1,11 @@
 module.exports = (app) ->
+  ###*
+  # @class SomeClass
+  # @constructor
+  # @method alarm
+  # @param {String} message The message
+  # @result {Boolean} whatever
+  ###
   app.config ($routeProvider, $locationProvider) ->
     $locationProvider.html5Mode({
       enabled: false,

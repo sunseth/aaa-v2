@@ -16,6 +16,7 @@ app.run ($rootScope) ->
 require('./directives/login')(app)
 require('./directives/signup')(app)
 require('./directives/events')(app)
+require('./directives/sortableHeader')(app)
 
 require('./controllers/public/home')(app)
 require('./controllers/public/events')(app)

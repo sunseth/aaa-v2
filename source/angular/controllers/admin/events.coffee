@@ -1,5 +1,9 @@
 module.exports = (app) ->
   app.controller 'AdminEventController', ($scope, $resource, $rootScope, $location, routeTraverse, eventsApi) ->
+    _ = require 'underscore'
+
+    $scope.order = ''
+
     # initialize accordion
     angular.element('.ui.accordion').accordion()
 
@@ -69,6 +73,16 @@ module.exports = (app) ->
           this.event.title = this.event.name
         , (error) ->
           console.log error
+
+    $scope.changeOrder = (order) ->
+      $scope.order = order
+
+    $scope.sortConfig = {
+      Name: 'name',
+      Description: 'description',
+      Date: 'date',
+      "Image Link": 'image'
+    }
   .directive 'longname', () ->
     return {
       require: 'ngModel',

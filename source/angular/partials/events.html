@@ -1,29 +1,45 @@
 <link rel="stylesheet" type="text/css" href="/vendor/datetimepicker/jquery.datetimepicker.css">
-<div class="ui two column grid">
-    <div class="column container">
-        <div class="ui action right icon input">
-            <i class="search icon"></i>
-            <input type="text" placeholder="Search..." ng-model="query">
-        </div>
-        <table class="ui compact celled table">
-            <thead>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Image</th>
-                <th>Date</th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Test name</td>
-                    <td>descp</td>
-                    <td>image</td>
-                    <td>date</td>
-                </tr>
-            </tbody>
-        </table>
+
+    <div class="ui container middle aligned grid">
+            <div class="row">
+                <div class="ui center aligned text container">
+                    Events admin
+                </div>
+            </div>
+
+                <div class="column">
+                    <p>Show</p>
+                </div>
+                <div class="two wide column">
+                    <a class="ui label">All</a>
+                    <a class="ui label">Past</a>
+                </div>
+                <div class="thirteen wide column right aligned">
+                                    <div class="ui icon input">
+                      <input type="text" placeholder="Search..." ng-model="query">
+                      <i class="search icon"></i>
+                    </div>
+                </div>
+            <div class="sixteen wide column">
+                <table class="ui five column celled table">
+                    <thead sortable config="sortConfig" on-click=changeOrder(order)></thead>
+                    <tbody>
+                        <tr ng-repeat="event in events | orderBy:order | search:query track by event._id" ng-cloak>
+                            <td>{{event.name}}</td>
+                            <td>{{event.description}}</td>
+                            <td>{{event.date | date : 'medium'}}</td>
+                            <td>{{event.image}}</td>
+                            <td><i class="edit large icon"></i>
+                                <i class="remove large icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="sixteen wide column right aligned"><i class="large add icon"></i></div>
+        </div>        
 
         <div class="ui styled fluid accordion">
-            <div ng-repeat="event in events | search:query track by event._id" ng-cloak>
+            <div ng-repeat="event in events | orderBy:'-name' | search:query track by event._id" ng-cloak>
                 <div class="title ui grid">
                     <div class="ui left floated five wide column">{{event.title}}</div>
                     <div class="ui right floated five column">
@@ -112,5 +128,3 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
