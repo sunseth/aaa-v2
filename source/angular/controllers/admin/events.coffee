@@ -1,11 +1,9 @@
 module.exports = (app) ->
   app.controller 'AdminEventController', ($scope, $resource, $rootScope, $location, routeTraverse, eventsApi) ->
     _ = require 'underscore'
+    moment = require 'moment'
 
     $scope.order = ''
-
-    # initialize accordion
-    angular.element('.ui.accordion').accordion()
 
     eventsPath = routeTraverse.resolve('admin.api.events')
     eventPath = routeTraverse.resolve('admin.api.events.event') + ':id'
@@ -13,44 +11,24 @@ module.exports = (app) ->
     eventsResource = eventsApi.events(eventsPath)
     eventResource = eventsApi.event(eventPath)
 
-    # initialize datetimepicker of the new event form
-    angular.element(document).ready () ->
-      setTimeout () ->
-        angular.element('#newEventDate').datetimepicker ({
-          format: 'd M Y H:i',
-          value: new Date
-        })
-      , 0
-
     eventsResource.query '', (results) ->
       $scope.events = results
+      $scope.events.selectedIndex = 0
 
-      # prevent the title updating as the form gets typed out
-      for event in $scope.events
-        event.title = event.name
-        event.imageUrl = event.image
+      # initialize the imageUrl field as the link of the picture
+      # as image will be the actual file instead
+      _.each $scope.events, (elem, index) ->
+        elem['imageUrl'] = elem['image']
 
-      i = 0
+      $rootScope.$broadcast 'loaded'
 
-      # initialize the datetimepickers for the events
-      angular.element(document).ready () ->
-        setTimeout () ->
-          for event in $scope.events
-            angular.element('.datepicker:eq(' + i.toString() + ')').datetimepicker({
-              format: 'd M Y H:i',
-              value: new Date event.date
-            })
-            i++
-        , 0
+    $scope.createEvent = (newEvent) ->
+      if newEvent.date in ['', undefined]
+        newEvent.date = new Date
 
-    $scope.createEvent = () ->
-      if $scope.newEvent.date in ['', undefined]
-        $scope.newEvent.date = new Date
-
-      event = new eventsResource($scope.newEvent)
+      event = new eventsResource(newEvent)
       event.$create {}, (response) ->
         newEvent = response.data
-        newEvent.title = newEvent.name
         newEvent.imageUrl = newEvent.image
         delete newEvent['image']
 
@@ -62,20 +40,51 @@ module.exports = (app) ->
       eventResource.remove {id: event._id}, (response) ->
         $scope.events.splice(index, 1)
 
-    $scope.put = (form) ->
+    $scope.update = (event) ->
+      form = event.form
+      event = event.event
+
       if !form.$valid
-        this.event.showValidations = true
+        form.showValidations = true
       else
-        this.event.showValidations = false
-        eventResource.put {id: this.event._id}, this.event, (response) =>
-          console.log response
-          this.event.imageUrl = response.image
-          this.event.title = this.event.name
-        , (error) ->
-          console.log error
+        form.showValidations = false
+        if $scope.create
+          if event.date in ['', undefined]
+            event.date = new Date
+
+          event = new eventsResource(event)
+          eventsResource.create event, (response)->
+            event = response
+            event.imageUrl = event.image
+            delete event['image']
+
+            $scope.events.push event
+            $rootScope.$broadcast 'createSuccess', 'Create success'
+
+          , (error) ->
+            console.log error
+        else 
+          eventResource.put {id: event._id}, event, (response) =>
+            response.imageUrl = response.image
+            $scope.events[$scope.selectedIndex] = response
+            $rootScope.$broadcast 'loaded', 'Save success'
+          , (error) ->
+            console.log error
 
     $scope.changeOrder = (order) ->
       $scope.order = order
+
+    $scope.showForm = (index) ->
+      console.log index
+      if index != undefined
+        $scope.selectedIndex = index
+        $scope.create = false
+        $rootScope.$broadcast 'showForm', index
+      else
+        $scope.create = true
+        $rootScope.$broadcast 'showNew', index
+
+    $scope.selectedIndex = 0
 
     $scope.sortConfig = {
       Name: 'name',
@@ -83,6 +92,7 @@ module.exports = (app) ->
       Date: 'date',
       "Image Link": 'image'
     }
+
   .directive 'longname', () ->
     return {
       require: 'ngModel',

@@ -1,0 +1,53 @@
+<div class="ui basic modal">
+    <form name="eventForm" novalidate class="ui form segment">
+        <div class="inline fields">
+            <div class="two wide field">
+                <label>Name</label>
+            </div>
+            <div class="eight wide field" ng-class="eventForm.name.$valid ? '' : 'error'">
+                <input type="text" name="name" ng-model="_event.name" required>
+            </div>
+            <div class="four wide field error" ng-show="eventForm.name.$invalid">
+                <p>Please enter an event name</p>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="two wide field">
+                <label>Image</label>
+            </div>
+            <div class="eight wide field">
+                <img class="ui small image" src={{_event.imageUrl}} ng-show="_event != null && _event.imageUrl != null" alt="">
+                <input type="file" name="image" files-model="_event.image" multiple>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="two wide field">
+                <label>Description</label>
+            </div>
+            <div class="eight wide field">
+                <input type="text" name="description" ng-model="_event.description">
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="two wide field">
+                <label>Date</label>
+            </div>
+            <div class="eight wide field dateContainer" ng-class="eventForm.date.$valid ? '' : 'error'">
+                <input type="text" name="date" class="datepicker" ng-model="_event.date" required>
+            </div>
+            <div class="four wide field error" ng-show="eventForm.date.$invalid">
+                <p>Please enter a date</p>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="two wide field">
+            <div class="ui blue submit button" ng-click="submitEvent()">Submit</div>
+        </div>
+        <div class="two wide field">
+            <p>{{status}}</p>
+        </div>
+        </div>
+    </form>
+</ui>
+
+

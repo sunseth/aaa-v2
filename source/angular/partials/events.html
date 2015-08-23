@@ -1,5 +1,4 @@
 <link rel="stylesheet" type="text/css" href="/vendor/datetimepicker/jquery.datetimepicker.css">
-
     <div class="ui container middle aligned grid">
             <div class="row">
                 <div class="ui center aligned text container">
@@ -28,103 +27,13 @@
                             <td>{{event.name}}</td>
                             <td>{{event.description}}</td>
                             <td>{{event.date | date : 'medium'}}</td>
-                            <td>{{event.image}}</td>
-                            <td><i class="edit large icon"></i>
-                                <i class="remove large icon"></i></td>
+                            <td>{{event.imageUrl}}</td>
+                            <td><i class="edit large icon" ng-click="showForm($index)"></i>
+                                <i class="remove large icon" ng-click="deleteEvent(event, $index)"></i></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="sixteen wide column right aligned"><i class="large add icon"></i></div>
-        </div>        
-
-        <div class="ui styled fluid accordion">
-            <div ng-repeat="event in events | orderBy:'-name' | search:query track by event._id" ng-cloak>
-                <div class="title ui grid">
-                    <div class="ui left floated five wide column">{{event.title}}</div>
-                    <div class="ui right floated five column">
-                        <i class="ui expand icon"></i>
-                    </div>
-                </div>
-                <div class="content">
-                    <form name="updateEvent" novalidate ng-submit="put($index)">
-                        <div class="ui form">
-                            <div class="inline fields">
-                                <div class="two wide field">
-                                    <label>Name</label>
-                                </div>
-                                <div class="eight wide field" ng-class="updateEvent.name.$valid ? '' : 'error'">
-                                    <input type="text" name="name" ng-model="event.name" required>
-                                </div>
-                                <div class="" ng-show="updateEvent.name.$invalid">
-                                    Please enter an event name
-                                </div>
-                            </div>
-                            <div class="inline fields">
-                                <div class="two wide field">
-                                    <label>Image</label>
-                                </div>
-                                <div class="eight wide field">
-                                    <img class="ui small image" src={{event.imageUrl}} alt="">
-                                    <input type="file" name="image" files-model="event.image" multiple>
-                                </div>
-                            </div>
-                            <div class="inline fields">
-                                <div class="two wide field">
-                                    <label>Description</label>
-                                </div>
-                                <div class="eight wide field">
-                                    <input type="text" ng-model="event.description">
-                                </div>
-                            </div>
-                            <div class="inline fields">
-                                <div class="two wide field">
-                                    <label>Date</label>
-                                </div>
-                                <div class="eight wide field dateContainer" ng-class="updateEvent.date.$valid ? '' : 'error'">
-                                    <input type="text" name="date" class="datepicker" ng-model="event.date" required>
-                                </div>
-                                <div class="" ng-show="updateEvent.date.$invalid">
-                                    Please enter a date
-                                </div>
-                            </div>
-                            <div class="field">
-                                <div class="ui blue submit button" ng-click="put(updateEvent)">Save changes</div>
-                            </div>
-                            <div class="field">
-                                <div class="ui red button" ng-click="deleteEvent(event, $index)">Delete this event</div>
-                            </div>
-                            <div ng-show="event.showValidations && updateEvent.$invalid">Please correct the errors before submitting the form</div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div>
-                <div class="title">make new</div>
-                <div class="content">
-                    <form name="create" novalidate class="ui form segment">
-                        <div class="field">
-                            <label for="name">Name</label>
-                            <input name="name" ng-model="newEvent.name" required></input>
-                        </div>
-
-                        <div class="field">
-                            <label for="description">Description</label>
-                            <input name="description" ng-model="newEvent.description"></input>
-                        </div>
-
-                        <div class="field">
-                            <label for="image">Image</label>
-                            <input name="image" files-model="newEvent.image" multiple type="file"></input>
-                        </div>
-
-                        <div class="field">
-                            <label for="date">Date</label>
-                            <input name="date" ng-model="newEvent.date" id="newEventDate"></input>
-                        </div>
-
-                        <div class="ui blue submit button" ng-click="createEvent()">Submit</div>
-                    </form>
-                </div>
-            </div>
+            <div class="sixteen wide column right aligned"><i class="large add icon" ng-click="showForm()"></i></div>
         </div>
+    <div event-form source="events" on-submit=update(event)></div>

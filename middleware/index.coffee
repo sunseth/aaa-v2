@@ -12,6 +12,7 @@ morgan = require 'morgan'
 config = require '../config'
 aws = require 'aws-sdk'
 paths = require '../paths'
+fs = require 'fs'
 
 dependencies = {config, paths}
 
@@ -54,4 +55,4 @@ module.exports = exports = (app) ->
   app.use morgan 'tiny', {
     skip: (req, res) ->
       return req.originalUrl.indexOf('.') != -1
-  }    
+  }

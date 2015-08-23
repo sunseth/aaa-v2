@@ -6,6 +6,7 @@ module.exports = (app, dependencies) ->
   url = require 'url'
   multer = require 'multer'
   underscore = require 'underscore'
+  q = require 'q'
 
   eventApi = app.express.Router()
   eventApi.use require('../../../middleware/dbError')
@@ -50,7 +51,9 @@ module.exports = (app, dependencies) ->
       else
         console.log 'deleted ' + key
 
-  uploadToS3 = (file, separator, callback) ->
+  uploadToS3 = (file, separator) ->
+    deferred = q.defer()
+
     photoBucket = new aws.S3.ManagedUpload {
       params: {
         Bucket: bucket,
@@ -61,8 +64,13 @@ module.exports = (app, dependencies) ->
         ContentEncoding: file.encoding
       }
     }
+    photoBucket.send (err, data) ->
+      if err
+        deferred.reject(err)
+      else
+        deferred.resolve(data)
 
-    photoBucket.send callback
+    return deferred.promise
 
   # returns the events collection
   eventApi.get '/', (req, res) ->
@@ -128,22 +136,24 @@ module.exports = (app, dependencies) ->
 
   eventApi.post '/', (req, res) ->
     file = req.files['image']
+    createEvent = (event) ->
+      event.save (err, result) ->
+        if err
+          res.send {err: err}
+        else
+          res.send result
 
-    callback = (err, data) ->
-      if err
-        console.log err
-        res.send {err: err}
-      else
-        e = new Event(req.body)
+    e = new Event req.body
+
+    if file != undefined
+      uploadToS3(file, req.user.email).then (data) ->
         e.image = data['Location']
-        e.save (err, result) ->
-          if err
-            console.log err.message
-            res.send {err: err}
-          else
-            res.send result
-
-    uploadToS3(file, req.user.email, callback)
+        createEvent(e)
+      , (err) ->
+        console.log 'AWS error'
+        console.log err
+    else
+      createEvent(e)
 
   eventApi.put /^\/(\w+$)/, (req, res, next) ->
     eventId = req.params[0]
@@ -166,7 +176,7 @@ module.exports = (app, dependencies) ->
 
     if req.files['image'] != undefined
       deleteOld = true
-      uploadToS3 req.files['image'], req.user.email, (err, data) ->
+      uploadToS3 req.files['image'], req.user.email.then (data) ->
         updatedEvent.image = data['Location']
         updateEvent updatedEvent, true
     else

@@ -28,13 +28,7 @@ module.exports = () ->
               headers: {
                 'Content-Type': undefined
               },
-              transformRequest: toMultipartForm,
-              interceptor: {
-                response: (response) ->
-                  console.log 'DITME RESPONSE'
-                  console.log response
-                  return response
-              }
+              transformRequest: toMultipartForm
             }
         event: (eventPath) ->
           return $resource eventPath,
