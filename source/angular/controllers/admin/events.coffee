@@ -1,15 +1,18 @@
 module.exports = (app) ->
-  app.controller 'AdminEventController', ($scope, $resource, $rootScope, $location, routeTraverse, eventsApi) ->
-    _ = require 'underscore'
-    moment = require 'moment'
-
+  ###*
+  # wtf?
+  # @module SomeModulee
+  # @main yuidoc
+  ###
+  app.controller 'AdminEventController', ($scope, $resource, $rootScope, $location, $q, routeTraverse, eventsApi) ->
     $scope.order = ''
 
     eventsPath = routeTraverse.resolve('admin.api.events')
     eventPath = routeTraverse.resolve('admin.api.events.event') + ':id'
 
-    eventsResource = eventsApi.events(eventsPath)
-    eventResource = eventsApi.event(eventPath)
+    Resource = new eventsApi()
+    eventsResource = Resource.events(eventsPath)
+    eventResource = Resource.event(eventPath)
 
     eventsResource.query '', (results) ->
       $scope.events = results
@@ -19,6 +22,7 @@ module.exports = (app) ->
       # as image will be the actual file instead
       _.each $scope.events, (elem, index) ->
         elem['imageUrl'] = elem['image']
+        elem['index'] = index
 
       $rootScope.$broadcast 'loaded'
 
@@ -41,50 +45,46 @@ module.exports = (app) ->
         $scope.events.splice(index, 1)
 
     $scope.update = (event) ->
-      form = event.form
-      event = event.event
+      deferred = $q.defer()
+      if $scope.create
+        if event.date in ['', undefined]
+          event.date = new Date
 
-      if !form.$valid
-        form.showValidations = true
-      else
-        form.showValidations = false
-        if $scope.create
-          if event.date in ['', undefined]
-            event.date = new Date
+        event = new eventsResource(event)
+        eventsResource.create event, (response)->
+          event = response
+          event.imageUrl = event.image
+          event.index = $scope.events.length
+          delete event['image']
 
-          event = new eventsResource(event)
-          eventsResource.create event, (response)->
-            event = response
-            event.imageUrl = event.image
-            delete event['image']
+          $scope.events.push event
+          deferred.resolve {type: 'create', event: event}
 
-            $scope.events.push event
-            $rootScope.$broadcast 'createSuccess', 'Create success'
+        , (error) ->
+          deferred.reject error
+      else 
+        eventResource.put {id: event._id}, event, (response) =>
+          response.imageUrl = response.image
+          response.index = event.index
+          $scope.events[$scope.selectedIndex] = response
 
-          , (error) ->
-            console.log error
-        else 
-          eventResource.put {id: event._id}, event, (response) =>
-            response.imageUrl = response.image
-            $scope.events[$scope.selectedIndex] = response
-            $rootScope.$broadcast 'loaded', 'Save success'
-          , (error) ->
-            console.log error
+          deferred.resolve {type: 'edit', index: $scope.selectedIndex, event: response}
+        , (error) ->
+          deferred.reject error
+
+      return deferred.promise
 
     $scope.changeOrder = (order) ->
       $scope.order = order
 
     $scope.showForm = (index) ->
-      console.log index
       if index != undefined
         $scope.selectedIndex = index
         $scope.create = false
         $rootScope.$broadcast 'showForm', index
       else
         $scope.create = true
-        $rootScope.$broadcast 'showNew', index
-
-    $scope.selectedIndex = 0
+        $rootScope.$broadcast 'showNew'
 
     $scope.sortConfig = {
       Name: 'name',
@@ -92,7 +92,6 @@ module.exports = (app) ->
       Date: 'date',
       "Image Link": 'image'
     }
-
   .directive 'longname', () ->
     return {
       require: 'ngModel',

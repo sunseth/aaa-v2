@@ -4,11 +4,14 @@
             <div class="two wide field">
                 <label>Name</label>
             </div>
-            <div class="eight wide field" ng-class="eventForm.name.$valid ? '' : 'error'">
+            <div class="eight wide field" ng-class="!showValidations ? '' : (eventForm.name.$valid ? '' : 'error')">
                 <input type="text" name="name" ng-model="_event.name" required>
             </div>
-            <div class="four wide field error" ng-show="eventForm.name.$invalid && eventForm.showValidations">
+            <div class="four wide field error" ng-show="eventForm.name.$invalid && showValidations">
                 <p>Please enter an event name</p>
+            </div>
+            <div class="four wide field error" ng-show="showServerValidations">
+                <p>{{_event.errors.name}}</p>
             </div>
         </div>
         <div class="inline fields">
@@ -32,11 +35,14 @@
             <div class="two wide field">
                 <label>Date</label>
             </div>
-            <div class="eight wide field dateContainer" ng-class="eventForm.date.$valid ? '' : 'error'">
+            <div class="eight wide field dateContainer" ng-class="!showValidations ? '' : (eventForm.date.$valid ? '' : 'error')">
                 <input type="text" name="date" class="datepicker" ng-model="_event.date" required>
             </div>
-            <div class="four wide field error" ng-show="eventForm.date.$invalid && eventForm.showValidations">
+            <div class="four wide field error" ng-show="eventForm.date.$invalid && showValidations">
                 <p>Please enter a date</p>
+            </div>
+            <div class="four wide field error" ng-show="showServerValidations">
+                <p>{{_event.errors.date}}</p>
             </div>
         </div>
         <div class="inline fields">

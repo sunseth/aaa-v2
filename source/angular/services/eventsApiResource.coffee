@@ -1,24 +1,25 @@
 module.exports = () ->
   angular.module("eventsApiResource", [])
     .service 'eventsApi', ($resource) ->
-      toMultipartForm = (data, headersGetter) ->
-        if (data == undefined)
-          return data;
+      class Resource
+        constructor: () ->
+        toMultipartForm: (data, headersGetter) ->
+          if (data == undefined)
+            return data;
 
-        fd = new FormData
-        angular.forEach data, (value, key) ->
-          if value instanceof FileList
-            if value.length == 1
-              fd.append(key, value[0]);
+          fd = new FormData
+          angular.forEach data, (value, key) ->
+            if value instanceof FileList
+              if value.length == 1
+                fd.append(key, value[0]);
+              else
+                angular.forEach value, (file, index) -> 
+                  fd.append(key + '_' + index, file)
             else
-              angular.forEach value, (file, index) -> 
-                fd.append(key + '_' + index, file)
-          else
-            fd.append(key, value);
+              fd.append(key, value);
 
-        return fd;
+          return fd;
 
-      return {
         events: (eventsPath) ->
           return $resource eventsPath, '',
             'create': {
@@ -28,8 +29,9 @@ module.exports = () ->
               headers: {
                 'Content-Type': undefined
               },
-              transformRequest: toMultipartForm
+              transformRequest: this.toMultipartForm
             }
+
         event: (eventPath) ->
           return $resource eventPath,
             {id: '@_id'}, 
@@ -41,7 +43,8 @@ module.exports = () ->
                 headers: {
                   'Content-Type': undefined
                 }
-                transformRequest: toMultipartForm
+                transformRequest: this.toMultipartForm
               },
             }
-      }
+
+      return Resource

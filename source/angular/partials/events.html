@@ -5,7 +5,6 @@
                     Events admin
                 </div>
             </div>
-
                 <div class="column">
                     <p>Show</p>
                 </div>
@@ -28,7 +27,7 @@
                             <td>{{event.description}}</td>
                             <td>{{event.date | date : 'medium'}}</td>
                             <td>{{event.imageUrl}}</td>
-                            <td><i class="edit large icon" ng-click="showForm($index)"></i>
+                            <td><i class="edit large icon" ng-click="showForm(event.index)"></i>
                                 <i class="remove large icon" ng-click="deleteEvent(event, $index)"></i></td>
                         </tr>
                     </tbody>

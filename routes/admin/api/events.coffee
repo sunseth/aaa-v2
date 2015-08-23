@@ -120,16 +120,13 @@ module.exports = (app, dependencies) ->
 
     new Event(newEvent).validate (err) ->
       if err
-        rtnJson = {errors: []}
+        rtnJson = {errors: {}}
         errors = underscore.values(err.errors)
 
         underscore.each errors, (v, k) ->
-          name = v.path
-          rtnJson.errors.push
-            name: v.name,
-            message: v.message,
-            path: v.path
-  
+          key = v.path
+          rtnJson.errors[key] = v.message
+
         res.status(400).json rtnJson
 
       else
