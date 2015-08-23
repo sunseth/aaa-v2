@@ -7,7 +7,7 @@
             <div class="eight wide field" ng-class="eventForm.name.$valid ? '' : 'error'">
                 <input type="text" name="name" ng-model="_event.name" required>
             </div>
-            <div class="four wide field error" ng-show="eventForm.name.$invalid">
+            <div class="four wide field error" ng-show="eventForm.name.$invalid && eventForm.showValidations">
                 <p>Please enter an event name</p>
             </div>
         </div>
@@ -35,7 +35,7 @@
             <div class="eight wide field dateContainer" ng-class="eventForm.date.$valid ? '' : 'error'">
                 <input type="text" name="date" class="datepicker" ng-model="_event.date" required>
             </div>
-            <div class="four wide field error" ng-show="eventForm.date.$invalid">
+            <div class="four wide field error" ng-show="eventForm.date.$invalid && eventForm.showValidations">
                 <p>Please enter a date</p>
             </div>
         </div>

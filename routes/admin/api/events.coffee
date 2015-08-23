@@ -1,5 +1,5 @@
 module.exports = (app, dependencies) ->
-  {config, auth, paths, data} = dependencies
+  {config, auth, paths, data, logger} = dependencies
   
   aws = require 'aws-sdk'
   fs = require 'fs'
@@ -19,14 +19,11 @@ module.exports = (app, dependencies) ->
     rename: (fieldname, filename) ->
       filename + Date.now()
     onFileUploadStart: (file) ->
-      console.log file.originalname + ' is starting ...'
+      logger.info 'Uploading %s is starting', file.originalname
       return
     onFileUploadComplete: (file) ->
-      console.log file.fieldname + ' uploaded to  ' + file.path
+      logger.info '%s uploaded to %s', file.fieldname, file.path
       done = true
-      return
-    onFieldsLimit: ->
-      console.log 'Crossed fields limit!'
       return
   )
 
@@ -34,6 +31,7 @@ module.exports = (app, dependencies) ->
   Event = data.Event
 
   deletefromS3 = (imageUrl) ->
+    logger.log 'debug', 'S3 attempting to delete %s', imageUrl
     tmp = url.parse unescape(imageUrl)
     key = tmp.pathname.slice 1
 
@@ -47,13 +45,14 @@ module.exports = (app, dependencies) ->
       Key: key
     }, (err, data) ->
       if err
-        console.log err
+        logger.log 'error', 'S3 delete failed, reason: %s', err.message
       else
-        console.log 'deleted ' + key
+        logger.log 'info', 'S3 delete success for key %s', key
 
   uploadToS3 = (file, separator) ->
     deferred = q.defer()
 
+    logger.info 'S3 attempting to upload file %s', file.name
     photoBucket = new aws.S3.ManagedUpload {
       params: {
         Bucket: bucket,
@@ -66,8 +65,10 @@ module.exports = (app, dependencies) ->
     }
     photoBucket.send (err, data) ->
       if err
+        logger.info 'S3 upload file failed, reason: %s', err
         deferred.reject(err)
       else
+        logger.info 'S3 upload file success, URL: %s', data['Location']
         deferred.resolve(data)
 
     return deferred.promise
@@ -134,13 +135,26 @@ module.exports = (app, dependencies) ->
       else
         next()
 
+  # filter properties not in the schema
+  eventApi.all '*', (req, res, next) ->
+    formData = req.body
+    eventSchema = require('../../../data/schemas/Event')
+    properties = underscore.keys eventSchema.paths
+    
+    underscore.each formData, (v, k) ->
+      if k not in properties
+        delete formData[k]
+    next()
+
   eventApi.post '/', (req, res) ->
     file = req.files['image']
     createEvent = (event) ->
       event.save (err, result) ->
         if err
+          logger.error 'EventsApi failed to create, reason: %s', err.message
           res.send {err: err}
         else
+          logger.info 'EventsApi successfully created %s', result.name
           res.send result
 
     e = new Event req.body
@@ -151,7 +165,6 @@ module.exports = (app, dependencies) ->
         createEvent(e)
       , (err) ->
         console.log 'AWS error'
-        console.log err
     else
       createEvent(e)
 
@@ -167,16 +180,18 @@ module.exports = (app, dependencies) ->
         {new: false},
         (err, old) ->
           if err
-            next err
+            logger.info 'EventsApi failed update, reason: %s', err.message
+            next
           else
             if deleteOld
               deletefromS3 old.image
+            logger.info 'EventsApi successfully updated %s', event.name
             res.send event
       )
 
     if req.files['image'] != undefined
       deleteOld = true
-      uploadToS3 req.files['image'], req.user.email.then (data) ->
+      uploadToS3(req.files['image'], req.user.email).then (data) ->
         updatedEvent.image = data['Location']
         updateEvent updatedEvent, true
     else

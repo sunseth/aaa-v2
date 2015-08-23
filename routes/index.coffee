@@ -6,7 +6,9 @@ config = require '../config'
 auth = require '../middleware/auth'
 paths = require '../paths'
 data = require '../data'
-dependencies = {config, auth, paths, data}
+logger = require '../middleware/logger'
+
+dependencies = {config, auth, paths, data, logger}
 
 module.exports = (app) ->
   app.engine 'ejs', engine

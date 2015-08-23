@@ -12,8 +12,6 @@ module.exports = (app) ->
         message: "Unauthorized - #{req.method} #{req.url}"
         redirectUrl: paths.public.home.index }
 
-    console.error err
-
     res.status statusCode
     try
       res.send err

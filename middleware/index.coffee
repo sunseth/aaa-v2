@@ -56,3 +56,9 @@ module.exports = exports = (app) ->
     skip: (req, res) ->
       return req.originalUrl.indexOf('.') != -1
   }
+
+  app.use morgan 'tiny', {
+    skip: (req, res) ->
+      return req.originalUrl.indexOf('.') != -1
+    stream: fs.createWriteStream './serverLog.txt', {flags: 'a'}
+  }
