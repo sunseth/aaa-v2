@@ -8,6 +8,7 @@ app = angular.module 'aaa-website', [
   'filters'
   'routeServices'
   'eventsApiResource'
+  'ngFileUpload'
 ]
 
 app.run ($rootScope) ->

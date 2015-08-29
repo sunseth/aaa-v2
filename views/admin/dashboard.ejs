@@ -7,25 +7,27 @@
       <a class="item">Log out</a>
     </div>
   </div>
-  <div class="ui middle aligned vertically padded page grid">
-    <br><br>
-    <h1 class="ui icon header">
-      <i class="settings icon"></i>
-      <div class="content">
-        Admin Dashboard
-        <div class="sub header">AAA Central Control. Manage website users and content.</div>
+  <div class="ui center aligned vertically padded page grid">
+    <div class="ui center aligned page grid">
+      <br><br>
+      <h1 class="ui icon header">
+        <i class="settings icon"></i>
+        <div class="content">
+          Admin Dashboard
+          <div class="sub header">AAA Central Control. Manage website users and content.</div>
+        </div>
+      </h1>
+      <div class="ui top attached tabular menu" style="padding:0px">
+        <a class="item" ng-click="change('/index')" ng-class="{active: activeTab=='index'}">Admin</a>
+        <a class="item" ng-click="change('/events')" ng-class="{active: activeTab=='events'}">Events</a>
+        <a class="item" ng-click="change('/families')" ng-class="{active: activeTab=='families'}">Families</a>
+        <a class="item" ng-click="change('/cabinet')" ng-class="{active: activeTab=='cabinet'}">Cabinet</a>
+        <!-- <a class="item" ng-click="change('/committees')" ng-class="{active: activeTab=='committees'}">Committees</a> -->
+        <a class="item" ng-click="change('/blog')" ng-class="{active: activeTab=='blog'}">Blog</a>
       </div>
-    </h1>
-    <div class="ui top attached tabular menu" style="padding:0px">
-      <a class="item" ng-click="change('/index')" ng-class="{active: activeTab=='index'}">Admin</a>
-      <a class="item" ng-click="change('/events')" ng-class="{active: activeTab=='events'}">Events</a>
-      <a class="item" ng-click="change('/families')" ng-class="{active: activeTab=='families'}">Families</a>
-      <a class="item" ng-click="change('/cabinet')" ng-class="{active: activeTab=='cabinet'}">Cabinet</a>
-      <!-- <a class="item" ng-click="change('/committees')" ng-class="{active: activeTab=='committees'}">Committees</a> -->
-      <a class="item" ng-click="change('/blog')" ng-class="{active: activeTab=='blog'}">Blog</a>
-    </div>
-    <div class="ui bottom attached segment">
-      <div ng-view></div>
+      <div class="ui bottom attached segment">
+        <div ng-view></div>
+      </div>
     </div>
   </div>
 </body>

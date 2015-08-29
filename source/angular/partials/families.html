@@ -1,4 +1,49 @@
-<div class="ui middle aligned page grid">
-  <div class="ui segment"></div>
-  <div class="ui segment"></div>
+<div class="ui basic center aligned segment">
+  <div class="ui styled fluid accordion">
+    <div class="active title">
+      <i class="write icon"></i>
+      Add a new family
+    </div>
+    <div class="content" style="padding-top:0">
+      <form class="ui basic form segment" ng-submit="self.submit(form)">
+        <div class="ui padded two column grid">
+          <div class="column">
+            <h3>Family Info/Picture</h3>
+            <div class="field">
+              <div class="ui left icon input">
+                <input type="text" placeholder="Name" ng-model="form.name">
+                <i class="user icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui left icon input">
+                <textarea placeholder="Description" ng-model="form.description"></textarea>
+                <i class="comments icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui left icon input">
+                <input type="file" placeholder="Photo" ng-model="form.familyImage">
+                <i class="photo icon"></i>
+              </div>
+            </div>
+          </div>
+          <div class="column">
+            <h3>Parents</h3>
+            <div class="field" ng-repeat="index in [1, 2, 3]">
+              <div class="ui left icon input">
+                <input type="text" placeholder="Parent" ng-model="form.parent[index]">
+                <i class="user icon"></i>
+              </div>
+              <div class="ui left icon input">
+                <input type="file" placeholder="Photo" ng-model="form.parentImage[index]">
+                <i class="photo icon"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="fluid ui basic teal button" ng-class="{loading:loading}">Create</button>
+      </form>
+    </div>
+  </div>
 </div>
