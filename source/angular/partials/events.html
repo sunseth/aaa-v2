@@ -35,4 +35,4 @@
             </div>
             <div class="sixteen wide column right aligned"><i class="large add icon" ng-click="showForm()"></i></div>
         </div>
-    <div event-form source="events" on-submit=update(event)></div>
+    <div event-form source="events" on-submit=createOrEdit(event) track-by="selectedIndex" show="show"></div>

@@ -22,6 +22,8 @@ filter = require 'gulp-filter'
 rename = require 'gulp-rename'
 coffeelint = require 'gulp-coffeelint'
 stylish = require 'coffeelint-stylish'
+coffeeify = require 'gulp-coffeeify'
+Server = require('karma').Server
 
 input =
   favicon: "#{__dirname}/source/favicon.ico"
@@ -131,3 +133,9 @@ gulp.task 'lint', ->
 
 gulp.task 'serve', ['nodemon', 'watch']
 gulp.task 'build', ['css', 'favicon', 'images', 'bower', 'coffee', 'bless', 'templates']
+
+gulp.task 'karma', ['bower', 'coffee'], (done) ->
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start()

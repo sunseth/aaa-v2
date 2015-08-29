@@ -1,6 +1,7 @@
 module.exports = (app) ->
   app.directive 'sortable', () ->
     return {
+      # template: '<p>foobar</p>'
       templateUrl: 'templates/sortableHeader.html',
       scope: {
         config: '='
@@ -43,18 +44,16 @@ module.exports = (app) ->
       scope: {
         parentFn: '&onSubmit'
         events: '&source'
+        index: '=trackBy'
+        show: '='
       }
       link: (scope, elem) ->
-        scope.$on 'showForm', (event, index) ->
-          elem.modal 'show'
-          scope._event = scope._events[index]          
-          setpicker(scope._event)
-          return
-        scope.$on 'showNew', () ->
-          elem.modal 'show'
-          scope._event = null
-          setpicker()
-          return
+        scope.$watch 'show', (newVal, oldVal) ->
+          if newVal != undefined and newVal != oldVal
+            elem.modal 'show'
+            scope._event = scope._events[scope.index]
+            setpicker(scope._event)
+            return
         scope.$on 'loaded', () ->
           scope._events = angular.copy scope.events()
       controller: ($scope) ->
@@ -69,18 +68,15 @@ module.exports = (app) ->
             $scope.parentFn({
               event: $scope._event
             }).then (response) ->
-              successType = response['type']
-              index = response['index']
-              changedEvent = response['event']
+              isEdit = $scope.index 
+              $scope.status = if isEdit then 'Edit success' else 'Create success'
 
-              if successType == 'create'
-                $scope.status = 'Create success'
-                $scope._events.push angular.copy changedEvent
+              if isEdit
+                $scope._events[$scope.index] = angular.copy response
+                $scope._event = $scope._events[$scope.index] 
+              else
+                $scope._events.push angular.copy response
                 $scope._event = $scope._events[$scope._events.length - 1] 
-              else if successType == 'edit'
-                $scope.status = 'Edit success'
-                $scope._events[index] = angular.copy changedEvent
-                $scope._event = $scope._events[index]
             , (errorResponse) ->
               $scope.showServerValidations = true
               $scope._event.errors = errorResponse.data.errors

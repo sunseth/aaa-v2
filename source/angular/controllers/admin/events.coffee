@@ -10,65 +10,62 @@ module.exports = (app) ->
     eventsPath = routeTraverse.resolve('admin.api.events')
     eventPath = routeTraverse.resolve('admin.api.events.event') + ':id'
 
-    Resource = new eventsApi()
-    eventsResource = Resource.events(eventsPath)
-    eventResource = Resource.event(eventPath)
+    eventsResource = eventsApi.events(eventsPath)
+    eventResource = eventsApi.event(eventPath)
 
-    eventsResource.query '', (results) ->
-      $scope.events = results
-      $scope.events.selectedIndex = 0
+    $scope.initialize = () ->
+      deferred = $q.defer()
 
-      # initialize the imageUrl field as the link of the picture
-      # as image will be the actual file instead
-      _.each $scope.events, (elem, index) ->
-        elem['imageUrl'] = elem['image']
-        elem['index'] = index
+      eventsResource.query '', (results) ->
+        $scope.events = results
+        $scope.events.selectedIndex = 0
 
-      $rootScope.$broadcast 'loaded'
+        # initialize the imageUrl field as the link of the picture
+        # as image will be the actual file instead
+        _.each $scope.events, (elem, index) ->
+          elem['imageUrl'] = elem['image']
+          elem['index'] = index
+        deferred.resolve($scope.events)
+        $rootScope.$broadcast 'loaded'
 
-    $scope.createEvent = (newEvent) ->
-      if newEvent.date in ['', undefined]
-        newEvent.date = new Date
+      return deferred.promise
 
-      event = new eventsResource(newEvent)
-      event.$create {}, (response) ->
-        newEvent = response.data
-        newEvent.imageUrl = newEvent.image
-        delete newEvent['image']
+    $scope.initialize()
 
-        $scope.events.push newEvent
-      , (error) ->
-        console.log error
+    $scope.foo = () ->
+      console.log 'from actual file'
 
     $scope.deleteEvent = (event, index) ->
+      deferred = $q.defer()
       eventResource.remove {id: event._id}, (response) ->
         $scope.events.splice(index, 1)
+        deferred.resolve()
 
-    $scope.update = (event) ->
+      return deferred.promise
+
+    $scope.createOrEdit = (event) ->
       deferred = $q.defer()
-      if $scope.create
+      if $scope.selectedIndex == undefined
         if event.date in ['', undefined]
           event.date = new Date
 
         event = new eventsResource(event)
-        eventsResource.create event, (response)->
-          event = response
-          event.imageUrl = event.image
-          event.index = $scope.events.length
+        eventsResource.create event, (response) ->
+          response.imageUrl = event.image
+          response.index = $scope.events.length
           delete event['image']
 
-          $scope.events.push event
-          deferred.resolve {type: 'create', event: event}
-
+          $scope.events.push response
+          deferred.resolve(response)
         , (error) ->
           deferred.reject error
-      else 
+      else
         eventResource.put {id: event._id}, event, (response) =>
           response.imageUrl = response.image
           response.index = event.index
           $scope.events[$scope.selectedIndex] = response
 
-          deferred.resolve {type: 'edit', index: $scope.selectedIndex, event: response}
+          deferred.resolve(response)
         , (error) ->
           deferred.reject error
 
@@ -77,14 +74,11 @@ module.exports = (app) ->
     $scope.changeOrder = (order) ->
       $scope.order = order
 
+    # to keep track of when the form gets shown, as the modal opens on $watch
+    $scope.show = false
     $scope.showForm = (index) ->
-      if index != undefined
-        $scope.selectedIndex = index
-        $scope.create = false
-        $rootScope.$broadcast 'showForm', index
-      else
-        $scope.create = true
-        $rootScope.$broadcast 'showNew'
+      $scope.selectedIndex = index
+      $scope.show = !$scope.show
 
     $scope.sortConfig = {
       Name: 'name',
