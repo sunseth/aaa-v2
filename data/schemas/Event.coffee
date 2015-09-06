@@ -8,8 +8,7 @@ EventSchema = new Schema(
   date: {type: Date, default: Date.now, min: [new Date, 'Date cannot be in the past']}
   location: String
   description: String
-  link: String
-  image: {type: String, required: false, match: [/^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:jpg|gif|png)$/, 'Image must be of type .jpg|.gif|.png']}
+  image: {type: String, required: false, match: [/^https?:\/\/(?:[a-z0-9\-]+\.)+[a-z]{2,6}(?:\/[^\/#?]+)+\.(?:jpg|jpeg|gif|png)$/, 'Image must be of type .jpg|.gif|.png']}
   imageFile: Object
 )
 

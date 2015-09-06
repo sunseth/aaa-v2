@@ -28,7 +28,15 @@
                 <label>Description</label>
             </div>
             <div class="eight wide field">
-                <input type="text" name="description" ng-model="_event.description">
+                <textarea name="description" ng-model="_event.description"></textarea>
+            </div>
+        </div>
+        <div class="inline fields">
+            <div class="two wide field">
+                <label>Location</label>
+            </div>
+            <div class="eight wide field">
+                <textarea name="location" ng-model="_event.location"></textarea>
             </div>
         </div>
         <div class="inline fields">
@@ -36,7 +44,7 @@
                 <label>Date</label>
             </div>
             <div class="eight wide field dateContainer" ng-class="!showValidations ? '' : (eventForm.date.$valid ? '' : 'error')">
-                <input type="text" name="date" class="datepicker" ng-model="_event.date" required>
+                <input type="text" name="date" class="datepicker" ng-model="_event.date" required>>
             </div>
             <div class="four wide field error" ng-show="eventForm.date.$invalid && showValidations">
                 <p>Please enter a date</p>
@@ -49,8 +57,8 @@
             <div class="two wide field">
             <div class="ui blue submit button" ng-click="submitEvent()">Submit</div>
         </div>
-        <div class="two wide field">
-            <p>{{status}}</p>
+        <div class="eight wide field" ng-show="status != undefined">
+            <p class="ui message" ng-class="success == true ? 'success' : 'warning'">{{status}}</p>
         </div>
         </div>
     </form>

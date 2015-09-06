@@ -1,7 +1,7 @@
 <% layout('../layout') -%>
 <% block('title', 'AAA - Events') -%>
 
-<body ng-controller="EventsController as self" ng-init="page='events';<%- include ../auth.ejs %>" class="aaa-main-page">
+<body ng-controller="EventsController" ng-init="page='events';<%- include ../auth.ejs %>" class="aaa-main-page">
   <%- include ../sidebar.ejs %>
   <%- include ../menu.ejs %>
   <div class="pusher">
@@ -16,23 +16,22 @@
             {{event.name}}
           </h1>
           <h2 class="ui right floated header" style="color:gray">
-            {{event.date}} <span ng-if="event.location">@ {{event.location}}</span>
+            {{event.date | date: 'medium'}} <span ng-if="event.location">@ {{event.location}}</span>
           </h2>
         </div>
         <div class="ui divider" style="margin-top:0px"></div>
         <div class="ui two column stackable grid">
-          <div class="row">
-            <div class="center aligned column" ng-if="$even">
-              <img ng-src="{{event.image}}" class="ui fluid image">
+          <div class="center aligned column" ng-if="$even">
+            <img ng-src="{{event.image}}" class="ui fluid image event-img">
+          </div>
+          <div class="left aligned column">
+            <h3 class="ui header" ng-show="event.description">Event description</h3>
+            <div class="ui fluid basic segment">
+              <div class="aaa-text-container">{{event.description}}</div>
             </div>
-            <div class="center aligned column">
-              <div class="ui fluid basic segment">
-                <div class="aaa-text-container">{{event.description}}</div>
-              </div>
-            </div>
-            <div class="center aligned column" ng-if="$odd">
-              <img ng-src="{{event.image}}" class="ui fluid image">
-            </div>
+          </div>
+          <div class="center aligned column" ng-if="$odd">
+            <img ng-src="{{event.image}}" class="ui fluid image">
           </div>
         </div>
       </div>

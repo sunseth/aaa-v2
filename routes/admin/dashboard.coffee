@@ -4,7 +4,7 @@ module.exports = (app, dependencies) ->
   admin = app.express.Router()
 
   # enforce clearance of 3 for admin site
-  app.use paths.admin.base, auth.user(1), admin
+  app.use paths.admin.base, admin
   adminPublic = app.express.Router()
 
   admin.use '/', adminPublic

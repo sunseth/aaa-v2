@@ -9,7 +9,6 @@ module.exports = (app, dependencies) ->
   q = require 'q'
 
   eventApi = app.express.Router()
-  eventApi.use require('../../../middleware/dbError')
 
   eventApi.use multer(
     limit:
@@ -43,13 +42,13 @@ module.exports = (app, dependencies) ->
     , (err) ->
       next(err)
 
-  eventApi.delete /^\/(\w+$)/, (req, res, next) ->
+  eventApi.delete /^\/(\w+$)/, auth.user(3), (req, res, next) ->
     EventController.delete(req.params[0]).then (result) ->
       res.send result
     , (err) ->
       next(err)
 
-  eventApi.post '/', (req, res) ->
+  eventApi.post '/', auth.user(3), (req, res, next) ->
     params = req.body
     params.imageFile = req.files['image']
     EventController.create(params).then (success) ->
@@ -57,7 +56,7 @@ module.exports = (app, dependencies) ->
     , (err) ->
       next(err)
 
-  eventApi.put /^\/(\w+$)/, (req, res, next) ->
+  eventApi.put /^\/(\w+$)/, auth.user(3), (req, res, next) ->
     params = req.body
     params.imageFile = req.files['image']
     params.id = req.params[0]
@@ -65,5 +64,7 @@ module.exports = (app, dependencies) ->
       res.send success
     , (err) ->
       next(err)
+
+  eventApi.use require('../../../middleware/dbError')
 
   return eventApi

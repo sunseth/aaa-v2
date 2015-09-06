@@ -1,9 +1,4 @@
 module.exports = (app) ->
-  ###*
-  # wtf?
-  # @module SomeModulee
-  # @main yuidoc
-  ###
   app.controller 'AdminEventController', ($scope, $resource, $rootScope, $location, $q, routeTraverse, eventsApi) ->
     $scope.order = ''
 
@@ -31,9 +26,6 @@ module.exports = (app) ->
       return deferred.promise
 
     $scope.initialize()
-
-    $scope.foo = () ->
-      console.log 'from actual file'
 
     $scope.deleteEvent = (event, index) ->
       deferred = $q.defer()
@@ -80,19 +72,11 @@ module.exports = (app) ->
       $scope.selectedIndex = index
       $scope.show = !$scope.show
 
+    # configuration for the sort headers: display label: event field
     $scope.sortConfig = {
       Name: 'name',
       Description: 'description',
+      Location: 'location',
       Date: 'date',
-      "Image Link": 'image'
-    }
-  .directive 'longname', () ->
-    return {
-      require: 'ngModel',
-      link: (scope, elm, attrs, ctrl) ->
-        ctrl.$validators.longname = (modelVal, viewVal) ->
-          if viewVal.length > 5
-            return true
-
-          return false
+      "Image Link": 'image',
     }

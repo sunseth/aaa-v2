@@ -1,4 +1,5 @@
-<div class="ui small modal">
+<a class="ui button aaa-menu-button" id="login-button" ng-click="showModal()" ng-class="{inverted: page=='home', basic:page!='home', blue:page!='home'}">Log in</a>
+<div class="ui small modal login">
   <div class="ui basic segment" ng-if="error" style="margin:0">
     <div class="ui negative message">
       {{error}}
@@ -7,7 +8,7 @@
   <div class="ui basic segment" style="margin:0">
     <div class="ui basic two column middle aligned relaxed fitted stackable grid">
       <div class="column">
-        <form class="ui basic form segment" ng-submit="self.submit(form)">
+        <form class="ui basic form segment" ng-submit="submit(form)">
           <div class="field">
             <label>Email</label>
             <div class="ui left icon input">

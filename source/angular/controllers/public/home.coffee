@@ -19,4 +19,3 @@ module.exports = (app) ->
           return location.reload()
         .error (err) =>
           return @$scope.error = err
-

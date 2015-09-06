@@ -18,13 +18,14 @@ module.exports = function(config) {
         'public/vendor/vendor.js',
         'sinon.js',
         'public/js/app.js',
-        'tests/frontend.coffee',
+        'tests/*.coffee',
         'source/angular/templates/*.html',
     ],
 
 
     // list of files to exclude
     exclude: [
+        'tests/test.coffee'
     ],
 
 

@@ -1,36 +1,30 @@
-
 module.exports = (app) ->
-  app.directive 'aaaLoginModal', () ->
+  app.directive 'aaaLoginModal', ($http, $rootScope, $q) ->
     return {
       restrict: 'E'
       templateUrl: 'templates/login.html'
       link: (scope, elem, attrs) ->
-        elem = elem.find('.ui.modal')
-        scope.$parent.loginModal = elem
-        scope.loginModal = elem
-        scope.loginModal.modal()
-      controller: LoginModal
-      controllerAs: 'self'
-      scope: {}
+        modal = elem.find('.ui.login.modal')
+        scope.showModal = () ->
+          modal.modal 'show'
+          return
+
+        scope.submit = (form) ->
+          return if scope.loading
+          deferred = $q.defer()
+          scope.loading = true
+          $http.post($rootScope.paths.public.login, form)
+            .success (res) =>
+              modal.modal 'hide'
+              deferred.resolve res
+              location.reload()
+            .error (err) =>
+              deferred.reject err 
+              scope.error = err
+            .finally () =>
+              delete scope.loading
+
+          return deferred.promise
+      scope:
+        page: '='
     }
-
-  class LoginModal
-    constructor: (@$scope, @$http, @$rootScope, @$route) ->
-
-    open: ->
-      return @$scope.loginModal.modal('show')
-
-    close: ->
-      return @$scope.loginModal.modal('hide')
-
-    submit: (form) ->
-      return if @$scope.loading
-      @$scope.loading = true
-      @$http.post(@$rootScope.paths.public.login, form)
-        .success (res) =>
-          @close()
-          return location.reload()
-        .error (err) =>
-          return @$scope.error = err
-        .finally () =>
-          delete @$scope.loading

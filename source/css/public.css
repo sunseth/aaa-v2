@@ -17,3 +17,6 @@ body.pushable {
   line-height: 1.5;
   font-size: 1.14285714rem;
 }
+img.event-img {
+	max-width: 300px!important;
+}

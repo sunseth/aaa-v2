@@ -25,8 +25,9 @@
                         <tr ng-repeat="event in events | orderBy:order | search:query track by event._id" ng-cloak>
                             <td>{{event.name}}</td>
                             <td>{{event.description}}</td>
+                            <td>{{event.location}}</td>
                             <td>{{event.date | date : 'medium'}}</td>
-                            <td>{{event.imageUrl}}</td>
+                            <td><img src="{{event.imageUrl}}"></img></td>
                             <td><i class="edit large icon" ng-click="showForm(event.index)"></i>
                                 <i class="remove large icon" ng-click="deleteEvent(event, $index)"></i></td>
                         </tr>

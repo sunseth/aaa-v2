@@ -1,15 +1,17 @@
 module.exports = (err, req, res, next) ->
-  # console.log err.stack
-  console.log err
+  _ = require 'underscore'
 
   if err.name == 'CastError'
     # additional error logic here
     console.log 'cast error'
-  # other error types...
+  else if err.name == 'ValidationError'
+    rtnJson = {errors: {}}
+    errors = _.values(err.errors)
 
-  console.log 'some shit broke'
-  res.status(500).send {
-    success: false,
-    msg: 'some shit broke',
-    stack: err.stack
-  }
+    _.each (errors), (v, k) ->
+      key = v.path
+      rtnJson.errors[key] = v.message
+
+    res.status(400).json rtnJson
+  else
+    res.status(500).json err
